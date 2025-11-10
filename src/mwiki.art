@@ -315,37 +315,3 @@ define :MediaWiki [
         ~"MediaWiki: |\apiUrl| (|status|)"
     ]
 ]
-
-;----------------------------------
-; Example Usage
-;----------------------------------
-
-; wiki: to :MediaWiki ["https://en.wikipedia.org/w/api.php"]!
-;
-; ; Login
-; wiki\login "username" "password"
-;
-; ; Get page
-; page: wiki\page "Main Page"
-; print page\content
-;
-; ; Edit page (requires login)
-; wiki\editPage "Test" "New content" "Update via API"
-;
-; ; Get category members
-; cat: wiki\category "Featured articles"
-; print cat\members
-;
-; ; Search
-; results: wiki\search "quantum physics" 5
-; print results
-;
-; ; User info
-; user: wiki\userInfo
-; print user\info
-;
-; ; Recent changes
-; changes: wiki\recentChanges 20
-; loop changes 'change [
-;     print [change\title "-" change\user]
-; ]
