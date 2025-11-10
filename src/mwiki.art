@@ -240,7 +240,7 @@ define :MediaWiki [
     user: method [][
         ;; description: « get current user information
         ;; returns: :mwUser :null
-        
+
         resp: \api.get #[
             action: "query"
             meta: "userinfo"
@@ -254,7 +254,10 @@ define :MediaWiki [
         return to :mwUser @[data\query\userinfo]!
     ]
     
-    recentChanges: method [limit][
+    recent: method [limit :integer :null][
+        ;; description: « get recent wiki changes
+        ;; returns: :block
+
         lmt: (null? limit)? -> 10 -> limit
         
         resp: \api.get #[
