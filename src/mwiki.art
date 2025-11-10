@@ -165,7 +165,7 @@ define :MediaWiki [
     editPage: method [title :string, content :string, summary :string][
         ;; description: « edit or create a wiki page
         ;; returns: :logical
-        
+
         unless \loggedIn -> return false
         
         ; Get CSRF token
@@ -197,7 +197,10 @@ define :MediaWiki [
         return key? editData 'edit
     ]
     
-    category: method [name][
+    category: method [name :string][
+        ;; description: « get all members of a category
+        ;; returns: :mwCategory :null
+        
         resp: \api.get #[
             action: "query"
             list: "categorymembers"
