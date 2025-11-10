@@ -102,7 +102,7 @@ define :MediaWiki [
     login: method [username :string, password :string][
         ;; description: « authenticate with MediaWiki API
         ;; returns: :logical
-        
+
         ; Get login token
         tokenResp: \api.get #[
             action: "query"
@@ -135,7 +135,10 @@ define :MediaWiki [
         return false
     ]
     
-    page: method [title][
+    page: method [title :string][
+        ;; description: « retrieve page content by title
+        ;; returns: :mwPage :null
+        
         resp: \api.get #[
             action: "query"
             prop: "revisions"
