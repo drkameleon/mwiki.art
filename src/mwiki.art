@@ -238,6 +238,9 @@ define :MediaWiki [
     ]
     
     user: method [][
+        ;; description: « get current user information
+        ;; returns: :mwUser :null
+        
         resp: \api.get #[
             action: "query"
             meta: "userinfo"
