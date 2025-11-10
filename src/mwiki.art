@@ -41,7 +41,7 @@ define :mwCategory [
 ; Main Implementation
 ;===========================================
 
-define :MediaWiki [
+define :MW [
 
     ;------------------------------
     ; Constructor

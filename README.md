@@ -35,7 +35,7 @@ Simply `import` it and start interacting with your favorite wiki:
 import 'mwiki!
 
 ; Connect to a MediaWiki instance
-wiki: to :MediaWiki ["https://rosettacode.org/w/api.php"]!
+wiki: to :MW ["https://rosettacode.org/w/api.php"]!
 
 ; Retrieve a page
 page: wiki\page "Fibonacci sequence"
