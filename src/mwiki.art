@@ -60,7 +60,7 @@ define :MediaWiki [
     ; Private: Cookie Management
     ;----------------------------------
     
-    parseCookies: method [setCookieHeaders][
+    parseCookies: function [setCookieHeaders][
         parsed: #[]
         headers: (string? setCookieHeaders)? -> @[setCookieHeaders] 
                                              -> setCookieHeaders
@@ -78,9 +78,9 @@ define :MediaWiki [
         return parsed
     ]
     
-    buildCookieHeader: method [][
-        if empty? \cookies -> return ""
-        join.with:"; " map keys \cookies 'k -> k ++ "=" ++ \cookies\[k]
+    buildCookieHeader: function [cookies][
+        if empty? cookies -> return ""
+        join.with:"; " map keys cookies 'k -> k ++ "=" ++ cookies\[k]
     ]
     
     ;----------------------------------
@@ -88,7 +88,7 @@ define :MediaWiki [
     ;----------------------------------
     
     apiGet: method [params][
-        headers: #["Cookie": \buildCookieHeader]
+        headers: #["Cookie": \buildCookieHeader \cookies]
         resp: request.get .headers:headers \apiUrl params
         
         if key? resp\headers "set-cookie" [
@@ -101,7 +101,7 @@ define :MediaWiki [
     ]
     
     apiPost: method [params][
-        headers: #["Cookie": \buildCookieHeader]
+        headers: #["Cookie": \buildCookieHeader \cookies]
         resp: request.post .headers:headers \apiUrl params
         
         if key? resp\headers "set-cookie" [
