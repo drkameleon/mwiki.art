@@ -1,4 +1,4 @@
-<p align="center"><h2>mwiki.art</h2></p>
+<h1 align="center">mwiki.art</h1>
 <p align="center">
   <b>MediaWiki API wrapper for Arturo</b>
   <br><br>
@@ -50,8 +50,9 @@ cat: wiki\category "Programming Tasks"
 print [cat\name "has" cat\members "members"]
 
 ; Login and edit (requires credentials)
-if wiki\login "username" "password" [
-    wiki\editPage "Test Page" "Hello, wiki!" "Created test page"
+using wiki [
+    if \login "username" "password" ->
+        \editPage "Test Page" "Hello, wiki!" "Created test page"
 ]
 ```
 
@@ -82,7 +83,6 @@ The main MediaWiki API client
 - `\search [query :string, limit :integer :null]` - search wiki pages (default: 10 results)
 - `\user []` - get current user information
 - `\recent [limit :integer :null]` - get recent changes (default: 10 items)
-- `\api [params :dictionary]` - low-level API call method
 
 #### mwPage
 
