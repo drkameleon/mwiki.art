@@ -13,7 +13,7 @@
 * [What does this package do?](#what-does-this-package-do)
 * [How do I use it?](#how-do-i-use-it)
 * [Type Reference](#type-reference)
-   * [MediaWiki](#mediawiki)
+   * [MW](#mw)
    * [mwPage](#mwpage)
    * [mwUser](#mwuser)
    * [mwCategory](#mwcategory)
@@ -58,14 +58,14 @@ using wiki [
 
 ### Type reference
 
-#### MediaWiki
+#### MW
 
 The main MediaWiki API client
 
 ##### constructor
 
 <pre>
-<b>to :MediaWiki</b> [<ins>apiUrl</ins> <i>:string</i>]
+<b>to :MW</b> [<ins>apiUrl</ins> <i>:string</i>]
 </pre>
 
 ##### fields
