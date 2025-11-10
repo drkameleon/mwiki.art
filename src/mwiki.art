@@ -1,0 +1,351 @@
+;===============================================
+; MWiki.art
+;
+; MediaWiki API wrapper
+; for Arturo
+;
+; MIT License
+; (c) 2025 Yanis Zafirópulos
+;===============================================
+
+;----------------------------------
+; Page Type
+;----------------------------------
+
+define :mwPage [
+    init: constructor [title content]
+    
+    string: method [][
+        ~"Page: |\title|"
+    ]
+]
+
+;----------------------------------
+; User Type
+;----------------------------------
+
+define :mwUser [
+    init: constructor [details]
+    
+    string: method [][
+        (key? \details 'name)? -> ~"User: |\details\name|"
+                               -> "User: (unknown)"
+    ]
+]
+
+;----------------------------------
+; Category Type
+;----------------------------------
+
+define :mwCategory [
+    init: constructor [name members]
+    
+    string: method [][
+        ~"Category: |\name| (|\members| members)"
+    ]
+]
+
+;----------------------------------
+; Main MediaWiki Type
+;----------------------------------
+
+define :MediaWiki [
+    init: method [apiUrl][
+        \apiUrl: apiUrl
+        \cookies: #[]
+        \loggedIn: false
+    ]
+    
+    ;----------------------------------
+    ; Private: Cookie Management
+    ;----------------------------------
+    
+    parseCookies: method [setCookieHeaders][
+        parsed: #[]
+        headers: (string? setCookieHeaders)? -> @[setCookieHeaders] 
+                                             -> setCookieHeaders
+        
+        loop headers 'header [
+            parts: split.by:";" header
+            unless empty? parts [
+                cookiePair: first parts
+                if contains? cookiePair "=" [
+                    kv: split.by:"=" cookiePair
+                    parsed\[first kv]: last kv
+                ]
+            ]
+        ]
+        return parsed
+    ]
+    
+    buildCookieHeader: method [][
+        if empty? \cookies -> return ""
+        join.with:"; " map keys \cookies 'k -> k ++ "=" ++ \cookies\[k]
+    ]
+    
+    ;----------------------------------
+    ; Private: HTTP Helpers
+    ;----------------------------------
+    
+    apiGet: method [params][
+        headers: #["Cookie": \buildCookieHeader]
+        resp: request.get .headers:headers \apiUrl params
+        
+        if key? resp\headers "set-cookie" [
+            newCookies: \parseCookies resp\headers\["set-cookie"]
+            loop newCookies [k,v][
+                \cookies\[k]: v
+            ]
+        ]
+        return resp
+    ]
+    
+    apiPost: method [params][
+        headers: #["Cookie": \buildCookieHeader]
+        resp: request.post .headers:headers \apiUrl params
+        
+        if key? resp\headers "set-cookie" [
+            newCookies: \parseCookies resp\headers\["set-cookie"]
+            loop newCookies [k,v][
+                \cookies\[k]: v
+            ]
+        ]
+        return resp
+    ]
+    
+    ;----------------------------------
+    ; Public: Authentication
+    ;----------------------------------
+    
+    login: method [username password][
+        ; Get login token
+        tokenResp: \apiGet #[
+            action: "query"
+            meta: "tokens"
+            type: "login"
+            format: "json"
+        ]
+        
+        if tokenResp\status <> 200 -> return false
+        
+        tokenData: read.json tokenResp\body
+        loginToken: tokenData\query\tokens\logintoken
+        
+        ; Perform login
+        loginResp: \apiPost #[
+            action: "login"
+            lgname: username
+            lgpassword: password
+            lgtoken: loginToken
+            format: "json"
+        ]
+        
+        if loginResp\status <> 200 -> return false
+        
+        loginData: read.json loginResp\body
+        
+        if loginData\login\result = "Success" [
+            \loggedIn: true
+            return true
+        ]
+        return false
+    ]
+    
+    ;----------------------------------
+    ; Public: Page Operations
+    ;----------------------------------
+    
+    page: method [title][
+        resp: \apiGet #[
+            action: "query"
+            prop: "revisions"
+            titles: title
+            rvprop: "content"
+            rvslots: "main"
+            format: "json"
+        ]
+        
+        if resp\status <> 200 -> return null
+        
+        data: read.json resp\body
+        pages: data\query\pages
+        
+        ; Get first (and only) page
+        pageId: first keys pages
+        pageData: pages\[pageId]
+        
+        if key? pageData 'missing -> return null
+        
+        content: pageData\revisions\0\slots\main\["*"]
+        return to :mwPage @[title content]!
+    ]
+    
+    editPage: method [title content summary][
+        unless \loggedIn -> return false
+        
+        ; Get CSRF token
+        tokenResp: \apiGet #[
+            action: "query"
+            meta: "tokens"
+            format: "json"
+        ]
+        
+        if tokenResp\status <> 200 -> return false
+        
+        tokenData: read.json tokenResp\body
+        editToken: tokenData\query\tokens\csrftoken
+        
+        ; Edit page
+        editParams: #[
+            action: "edit"
+            title: title
+            text: content
+            summary: summary
+            token: editToken
+            format: "json"
+        ]
+        
+        editResp: \apiPost editParams
+        
+        if editResp\status <> 200 -> return false
+        
+        editData: read.json editResp\body
+        return key? editData 'edit
+    ]
+    
+    ;----------------------------------
+    ; Public: Category Operations
+    ;----------------------------------
+    
+    category: method [name][
+        resp: \apiGet #[
+            action: "query"
+            list: "categorymembers"
+            cmtitle: (prefix? name "Category:")? -> name -> "Category:" ++ name
+            cmlimit: "500"
+            format: "json"
+        ]
+        
+        if resp\status <> 200 -> return null
+        
+        data: read.json resp\body
+        members: map data\query\categorymembers 'item -> item\title
+        
+        return to :mwCategory @[name size members]!
+    ]
+    
+    ;----------------------------------
+    ; Public: Search Operations
+    ;----------------------------------
+    
+    search: method [query limit][
+        lmt: (null? limit)? -> 10 -> limit
+        
+        resp: \apiGet #[
+            action: "query"
+            list: "search"
+            srsearch: query
+            srlimit: to :string lmt
+            format: "json"
+        ]
+        
+        if resp\status <> 200 -> return @[]
+        
+        data: read.json resp\body
+        return map data\query\search 'item -> item\title
+    ]
+    
+    ;----------------------------------
+    ; Public: User Operations
+    ;----------------------------------
+    
+    userInfo: method [][
+        resp: \apiGet #[
+            action: "query"
+            meta: "userinfo"
+            uiprop: "blockinfo|groups|rights|editcount"
+            format: "json"
+        ]
+        
+        if resp\status <> 200 -> return null
+        
+        data: read.json resp\body
+        return to :mwUser @[data\query\userinfo]!
+    ]
+    
+    userContribs: method [username limit][
+        lmt: (null? limit)? -> 10 -> limit
+        
+        resp: \apiGet #[
+            action: "query"
+            list: "usercontribs"
+            ucuser: username
+            uclimit: to :string lmt
+            format: "json"
+        ]
+        
+        if resp\status <> 200 -> return @[]
+        
+        data: read.json resp\body
+        return data\query\usercontribs
+    ]
+    
+    ;----------------------------------
+    ; Public: Utility
+    ;----------------------------------
+    
+    recentChanges: method [limit][
+        lmt: (null? limit)? -> 10 -> limit
+        
+        resp: \apiGet #[
+            action: "query"
+            list: "recentchanges"
+            rclimit: to :string lmt
+            format: "json"
+        ]
+        
+        if resp\status <> 200 -> return @[]
+        
+        data: read.json resp\body
+        return data\query\recentchanges
+    ]
+    
+    string: method [][
+        status: (\loggedIn)? -> "logged in" -> "not logged in"
+        ~"MediaWiki: |\apiUrl| (|status|)"
+    ]
+]
+
+;----------------------------------
+; Example Usage
+;----------------------------------
+
+; wiki: to :MediaWiki ["https://en.wikipedia.org/w/api.php"]!
+;
+; ; Login
+; wiki\login "username" "password"
+;
+; ; Get page
+; page: wiki\page "Main Page"
+; print page\content
+;
+; ; Edit page (requires login)
+; wiki\editPage "Test" "New content" "Update via API"
+;
+; ; Get category members
+; cat: wiki\category "Featured articles"
+; print cat\members
+;
+; ; Search
+; results: wiki\search "quantum physics" 5
+; print results
+;
+; ; User info
+; user: wiki\userInfo
+; print user\info
+;
+; ; Recent changes
+; changes: wiki\recentChanges 20
+; loop changes 'change [
+;     print [change\title "-" change\user]
+; ]
