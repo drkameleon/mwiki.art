@@ -99,7 +99,10 @@ define :MediaWiki [
     
     ;----------------------------------
     
-    login: method [username password][
+    login: method [username :string, password :string][
+        ;; description: « authenticate with MediaWiki API
+        ;; returns: :logical
+        
         ; Get login token
         tokenResp: \api.get #[
             action: "query"
