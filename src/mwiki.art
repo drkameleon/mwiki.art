@@ -87,22 +87,9 @@ define :MediaWiki [
     ; Private: HTTP Helpers
     ;----------------------------------
     
-    apiGet: method [params][
+    api: method [params][
         headers: #["Cookie": \buildCookieHeader \cookies]
-        resp: request.get .headers:headers \apiUrl params
-        
-        if key? resp\headers "set-cookie" [
-            newCookies: \parseCookies resp\headers\["set-cookie"]
-            loop newCookies [k,v][
-                \cookies\[k]: v
-            ]
-        ]
-        return resp
-    ]
-    
-    apiPost: method [params][
-        headers: #["Cookie": \buildCookieHeader \cookies]
-        resp: request.post .headers:headers \apiUrl params
+        resp: request .headers:headers \apiUrl params
         
         if key? resp\headers "set-cookie" [
             newCookies: \parseCookies resp\headers\["set-cookie"]
