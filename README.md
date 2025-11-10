@@ -1,4 +1,4 @@
-<p align="center"><h2>mwiki.art</h2></p>
+<h1 align="center">mwiki.art</h1>
 <p align="center">
   <b>MediaWiki API wrapper for Arturo</b>
   <br><br>
