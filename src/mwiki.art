@@ -138,7 +138,7 @@ define :MediaWiki [
     page: method [title :string][
         ;; description: « retrieve page content by title
         ;; returns: :mwPage :null
-        
+
         resp: \api.get #[
             action: "query"
             prop: "revisions"
@@ -162,7 +162,10 @@ define :MediaWiki [
         return to :mwPage @[title content]!
     ]
     
-    editPage: method [title content summary][
+    editPage: method [title :string, content :string, summary :string][
+        ;; description: « edit or create a wiki page
+        ;; returns: :logical
+        
         unless \loggedIn -> return false
         
         ; Get CSRF token
