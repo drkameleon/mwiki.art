@@ -82,7 +82,6 @@ The main MediaWiki API client
 - `\search [query :string, limit :integer :null]` - search wiki pages (default: 10 results)
 - `\user []` - get current user information
 - `\recent [limit :integer :null]` - get recent changes (default: 10 items)
-- `\api [params :dictionary]` - low-level API call method
 
 #### mwPage
 
