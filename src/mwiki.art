@@ -9,7 +9,7 @@
 ;===============================================
 
 ;----------------------------------
-; Page Type
+; Page
 ;----------------------------------
 
 define :mwPage [
@@ -21,7 +21,7 @@ define :mwPage [
 ]
 
 ;----------------------------------
-; User Type
+; User
 ;----------------------------------
 
 define :mwUser [
@@ -34,7 +34,7 @@ define :mwUser [
 ]
 
 ;----------------------------------
-; Category Type
+; Category
 ;----------------------------------
 
 define :mwCategory [
@@ -46,7 +46,7 @@ define :mwCategory [
 ]
 
 ;----------------------------------
-; Main MediaWiki Type
+; Main Wrapper
 ;----------------------------------
 
 define :MediaWiki [
@@ -57,7 +57,7 @@ define :MediaWiki [
     ]
     
     ;----------------------------------
-    ; Private: Cookie Management
+    ; Private Helpers
     ;----------------------------------
     
     parseCookies: function [setCookieHeaders][
@@ -84,7 +84,7 @@ define :MediaWiki [
     ]
     
     ;----------------------------------
-    ; Private: HTTP Helpers
+    ; Methods
     ;----------------------------------
     
     api: method [params][
@@ -101,12 +101,10 @@ define :MediaWiki [
     ]
     
     ;----------------------------------
-    ; Public: Authentication
-    ;----------------------------------
     
     login: method [username password][
         ; Get login token
-        tokenResp: \apiGet #[
+        tokenResp: \api.get #[
             action: "query"
             meta: "tokens"
             type: "login"
@@ -118,8 +116,7 @@ define :MediaWiki [
         tokenData: read.json tokenResp\body
         loginToken: tokenData\query\tokens\logintoken
         
-        ; Perform login
-        loginResp: \apiPost #[
+        loginResp: \api.post #[
             action: "login"
             lgname: username
             lgpassword: password
@@ -138,12 +135,8 @@ define :MediaWiki [
         return false
     ]
     
-    ;----------------------------------
-    ; Public: Page Operations
-    ;----------------------------------
-    
     page: method [title][
-        resp: \apiGet #[
+        resp: \api.get #[
             action: "query"
             prop: "revisions"
             titles: title
@@ -171,7 +164,7 @@ define :MediaWiki [
         unless \loggedIn -> return false
         
         ; Get CSRF token
-        tokenResp: \apiGet #[
+        tokenResp: \api.get #[
             action: "query"
             meta: "tokens"
             format: "json"
@@ -182,7 +175,6 @@ define :MediaWiki [
         tokenData: read.json tokenResp\body
         editToken: tokenData\query\tokens\csrftoken
         
-        ; Edit page
         editParams: #[
             action: "edit"
             title: title
@@ -192,7 +184,7 @@ define :MediaWiki [
             format: "json"
         ]
         
-        editResp: \apiPost editParams
+        editResp: \api.post editParams
         
         if editResp\status <> 200 -> return false
         
@@ -200,12 +192,8 @@ define :MediaWiki [
         return key? editData 'edit
     ]
     
-    ;----------------------------------
-    ; Public: Category Operations
-    ;----------------------------------
-    
     category: method [name][
-        resp: \apiGet #[
+        resp: \api.get #[
             action: "query"
             list: "categorymembers"
             cmtitle: (prefix? name "Category:")? -> name -> "Category:" ++ name
@@ -221,14 +209,10 @@ define :MediaWiki [
         return to :mwCategory @[name size members]!
     ]
     
-    ;----------------------------------
-    ; Public: Search Operations
-    ;----------------------------------
-    
     search: method [query limit][
         lmt: (null? limit)? -> 10 -> limit
         
-        resp: \apiGet #[
+        resp: \api.get #[
             action: "query"
             list: "search"
             srsearch: query
@@ -242,12 +226,8 @@ define :MediaWiki [
         return map data\query\search 'item -> item\title
     ]
     
-    ;----------------------------------
-    ; Public: User Operations
-    ;----------------------------------
-    
     userInfo: method [][
-        resp: \apiGet #[
+        resp: \api.get #[
             action: "query"
             meta: "userinfo"
             uiprop: "blockinfo|groups|rights|editcount"
@@ -263,7 +243,7 @@ define :MediaWiki [
     userContribs: method [username limit][
         lmt: (null? limit)? -> 10 -> limit
         
-        resp: \apiGet #[
+        resp: \api.get #[
             action: "query"
             list: "usercontribs"
             ucuser: username
@@ -277,14 +257,10 @@ define :MediaWiki [
         return data\query\usercontribs
     ]
     
-    ;----------------------------------
-    ; Public: Utility
-    ;----------------------------------
-    
     recentChanges: method [limit][
         lmt: (null? limit)? -> 10 -> limit
         
-        resp: \apiGet #[
+        resp: \api.get #[
             action: "query"
             list: "recentchanges"
             rclimit: to :string lmt
