@@ -198,9 +198,9 @@ define :MediaWiki [
     ]
     
     category: method [name :string][
-        ;; description: « get all members of a category
+        ;; description: « get all members of given category
         ;; returns: :mwCategory :null
-        
+
         resp: \api.get #[
             action: "query"
             list: "categorymembers"
@@ -217,7 +217,10 @@ define :MediaWiki [
         return to :mwCategory @[name size members]!
     ]
     
-    search: method [query limit][
+    search: method [query :string, limit :integer :null][
+        ;; description: « search wiki pages using given query
+        ;; returns: :block
+
         lmt: (null? limit)? -> 10 -> limit
         
         resp: \api.get #[
