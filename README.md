@@ -50,8 +50,9 @@ cat: wiki\category "Programming Tasks"
 print [cat\name "has" cat\members "members"]
 
 ; Login and edit (requires credentials)
-if wiki\login "username" "password" [
-    wiki\editPage "Test Page" "Hello, wiki!" "Created test page"
+using wiki [
+    if \login "username" "password" ->
+        \editPage "Test Page" "Hello, wiki!" "Created test page"
 ]
 ```
 
