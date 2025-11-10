@@ -8,9 +8,9 @@
 ; (c) 2025 Yanis Zafirópulos
 ;===============================================
 
-;----------------------------------
-; Page
-;----------------------------------
+;===========================================
+; Type definitions
+;===========================================
 
 define :mwPage [
     init: constructor [title content]
@@ -19,10 +19,6 @@ define :mwPage [
         ~"Page: |\title|"
     ]
 ]
-
-;----------------------------------
-; User
-;----------------------------------
 
 define :mwUser [
     init: constructor [details]
@@ -33,10 +29,6 @@ define :mwUser [
     ]
 ]
 
-;----------------------------------
-; Category
-;----------------------------------
-
 define :mwCategory [
     init: constructor [name members]
     
@@ -45,11 +37,16 @@ define :mwCategory [
     ]
 ]
 
-;----------------------------------
-; Main Wrapper
-;----------------------------------
+;===========================================
+; Main Implementation
+;===========================================
 
 define :MediaWiki [
+
+    ;------------------------------
+    ; Constructor
+    ;------------------------------
+
     init: method [apiUrl][
         \apiUrl: apiUrl
         \cookies: #[]
@@ -150,7 +147,6 @@ define :MediaWiki [
         data: read.json resp\body
         pages: data\query\pages
         
-        ; Get first (and only) page
         pageId: first keys pages
         pageData: pages\[pageId]
         
@@ -226,7 +222,7 @@ define :MediaWiki [
         return map data\query\search 'item -> item\title
     ]
     
-    userInfo: method [][
+    user: method [][
         resp: \api.get #[
             action: "query"
             meta: "userinfo"
@@ -238,23 +234,6 @@ define :MediaWiki [
         
         data: read.json resp\body
         return to :mwUser @[data\query\userinfo]!
-    ]
-    
-    userContribs: method [username limit][
-        lmt: (null? limit)? -> 10 -> limit
-        
-        resp: \api.get #[
-            action: "query"
-            list: "usercontribs"
-            ucuser: username
-            uclimit: to :string lmt
-            format: "json"
-        ]
-        
-        if resp\status <> 200 -> return @[]
-        
-        data: read.json resp\body
-        return data\query\usercontribs
     ]
     
     recentChanges: method [limit][
@@ -272,6 +251,10 @@ define :MediaWiki [
         data: read.json resp\body
         return data\query\recentchanges
     ]
+
+    ;------------------------------
+    ; Magic
+    ;------------------------------
     
     string: method [][
         status: (\loggedIn)? -> "logged in" -> "not logged in"
