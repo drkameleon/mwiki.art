@@ -96,8 +96,8 @@ Retrieve page content by title.
 </pre>
 
 ###### Returns
-- *:mwPage* - Page object containing title and content
-- *:null* - If page not found or request fails
+- *:mwPage* - page object containing title and content
+- *:null* - page not found or request failure
 
 ##### `editPage`
 
@@ -119,8 +119,8 @@ Get all members of given category.
 </pre>
 
 ###### Returns
-- *:mwCategory* - Category object containing name, size, and member list
-- *:null* - If request fails
+- *:mwCategory* - category object containing name, size, and member list
+- *:null* - request failure
 
 ##### `search`
 
@@ -137,7 +137,7 @@ Search wiki pages using given query.
 | limit | :integer | Limit search results (default: 10) |
 
 ###### Returns
-- *:block* - Array of page titles matching the search query
+- *:block* - array of page titles matching the search query
 
 ##### `user`
 
@@ -148,8 +148,8 @@ Get current user information.
 </pre>
 
 ###### Returns
-- *:mwUser* - User object with information, groups, rights, and edit count
-- *:null* - If request fails
+- *:mwUser* - user object with information, groups, rights, and edit count
+- *:null* - request failure
 
 ##### `recent`
 
@@ -160,7 +160,7 @@ Get recent wiki changes.
 </pre>
 
 ###### Returns
-- *:block* - Array of recent changes (default limit: 10)
+- *:block* - array of recent changes (default limit: 10)
 
 ### 🔹 mwPage
 
