@@ -217,11 +217,11 @@ define :MW [
         return to :mwCategory @[name size members]!
     ]
     
-    search: method [query :string, limit :integer :null][
+    search: method [query :string][
         ;; description: « search wiki pages using given query
         ;; returns: :block
 
-        lmt: (null? limit)? -> 10 -> limit
+        lmt: (attr 'limit) ?? 10
         
         resp: \api.get #[
             action: "query"
