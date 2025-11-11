@@ -42,7 +42,7 @@ page: wiki\page "Fibonacci sequence"
 print page\content
 
 ; Search for pages
-results: wiki\search "palindrome" 5
+results: wiki\search.limit:5 "palindrome"
 print.lines results
 
 ; Get category members
