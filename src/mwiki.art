@@ -219,6 +219,9 @@ define :MW [
     
     search: method [query :string][
         ;; description: « search wiki pages using given query
+        ;; options: [
+        ;;     limit: :integer « limit search results (default: 10)
+        ;; ]
         ;; returns: :block
 
         lmt: (attr 'limit) ?? 10
