@@ -58,23 +58,23 @@ using wiki [
 
 ### Type reference
 
-#### MW
+#### `MW`
 
 The main MediaWiki API client
 
-##### constructor
+##### Constructor
 
 <pre>
 <b>to :MW</b> [<ins>apiUrl</ins> <i>:string</i>]
 </pre>
 
-##### fields
+##### Fields
 
 - `\apiUrl` - the MediaWiki API endpoint
 - `\cookies` - session cookies (managed automatically)
 - `\loggedIn` - authentication status
 
-##### methods
+##### Methods
 
 - `\login [username :string, password :string]` - authenticate with the wiki
 - `\page [title :string]` - retrieve page content by title
@@ -84,46 +84,46 @@ The main MediaWiki API client
 - `\user []` - get current user information
 - `\recent [limit :integer :null]` - get recent changes (default: 10 items)
 
-#### mwPage
+#### `mwPage`
 
 Represents a wiki page with its content
 
-##### constructor
+##### Constructor
 
 <pre>
 <b>to :mwPage</b> [<ins>title</ins> <i>:string</i>, <ins>content</ins> <i>:string</i>]
 </pre>
 
-##### fields
+##### Fields
 
 - `\title` - page title
 - `\content` - page wikitext content
 
-#### mwUser
+#### `mwUser`
 
 Represents a MediaWiki user
 
-##### constructor
+##### Constructor
 
 <pre>
 <b>to :mwUser</b> [<ins>details</ins> <i>:dictionary</i>]
 </pre>
 
-##### fields
+##### Fields
 
 - `\details` - user information dictionary
 
-#### mwCategory
+#### `mwCategory`
 
 Represents a wiki category with its members
 
-##### constructor
+##### Constructor
 
 <pre>
 <b>to :mwCategory</b> [<ins>name</ins> <i>:string</i>, <ins>members</ins> <i>:integer</i>]
 </pre>
 
-##### fields
+##### Fields
 
 - `\name` - category name
 - `\members` - number of members
