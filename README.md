@@ -13,21 +13,21 @@
 * [What does this package do?](#what-does-this-package-do)
 * [How do I use it?](#how-do-i-use-it)
 * [Type Reference](#type-reference)
-   * [MW](#mw)
-   * [mwPage](#mwpage)
-   * [mwUser](#mwuser)
-   * [mwCategory](#mwcategory)
+   * [MW](#-mw)
+   * [mwPage](#-mwpage)
+   * [mwUser](#-mwuser)
+   * [mwCategory](#-mwcategory)
 * [License](#license)
 
 <!--te-->
 
 ---
 
-### What does this package do?
+## What does this package do?
 
 This package provides a complete MediaWiki API wrapper for Arturo, enabling seamless interaction with any MediaWiki-powered wiki (Wikipedia, Wikia, etc.). It handles authentication, page retrieval and editing, search, category browsing, and more - with automatic cookie management under the hood.
 
-### How do I use it?
+## How do I use it?
 
 Simply `import` it and start interacting with your favorite wiki:
 
@@ -56,74 +56,152 @@ using wiki [
 ]
 ```
 
-### Type reference
+## Type reference
 
-#### `MW`
+### 🔹 MW
 
 The main MediaWiki API client
 
-##### Constructor
+#### Constructor
 
 <pre>
 <b>to :MW</b> [<ins>apiUrl</ins> <i>:string</i>]
 </pre>
 
-##### Fields
+#### Fields
 
 - `\apiUrl` - the MediaWiki API endpoint
 - `\cookies` - session cookies (managed automatically)
 - `\loggedIn` - authentication status
 
-##### Methods
+#### Methods
 
-- `\login [username :string, password :string]` - authenticate with the wiki
-- `\page [title :string]` - retrieve page content by title
-- `\editPage [title :string, content :string, summary :string]` - edit or create a page
-- `\category [name :string]` - get all members of a category
-- `\search [query :string, limit :integer :null]` - search wiki pages (default: 10 results)
-- `\user []` - get current user information
-- `\recent [limit :integer :null]` - get recent changes (default: 10 items)
+##### `login`
 
-#### `mwPage`
+Authenticate with MediaWiki API.
+
+<pre>
+<b>login</b> <ins>username</ins> <i>:string</i> <ins>password</ins> <i>:string</i>
+</pre>
+
+###### Returns
+- *:logical* - `true` if authentication successful, `false` otherwise
+
+##### `page`
+
+Retrieve page content by title.
+
+<pre>
+<b>page</b> <ins>title</ins> <i>:string</i>
+</pre>
+
+###### Returns
+- *:mwPage* - Page object containing title and content
+- *:null* - If page not found or request fails
+
+##### `editPage`
+
+Edit or create a wiki page.
+
+<pre>
+<b>editPage</b> <ins>title</ins> <i>:string</i> <ins>content</ins> <i>:string</i> <ins>summary</ins> <i>:string</i>
+</pre>
+
+###### Returns
+- *:logical* - `true` if edit successful, `false` otherwise
+
+##### `category`
+
+Get all members of given category.
+
+<pre>
+<b>category</b> <ins>name</ins> <i>:string</i>
+</pre>
+
+###### Returns
+- *:mwCategory* - Category object containing name, size, and member list
+- *:null* - If request fails
+
+##### `search`
+
+Search wiki pages using given query.
+
+<pre>
+<b>search</b> <ins>query</ins> <i>:string</i>
+</pre>
+
+###### Attributes
+
+| Option | Type | Description |
+|----|----|----|
+| limit | :integer | Limit search results (default: 10) |
+
+###### Returns
+- *:block* - Array of page titles matching the search query
+
+##### `user`
+
+Get current user information.
+
+<pre>
+<b>user</b>
+</pre>
+
+###### Returns
+- *:mwUser* - User object with information, groups, rights, and edit count
+- *:null* - If request fails
+
+##### `recent`
+
+Get recent wiki changes.
+
+<pre>
+<b>recent</b> <ins>limit</ins> <i>:integer :null</i>
+</pre>
+
+###### Returns
+- *:block* - Array of recent changes (default limit: 10)
+
+### 🔹 mwPage
 
 Represents a wiki page with its content
 
-##### Constructor
+#### Constructor
 
 <pre>
 <b>to :mwPage</b> [<ins>title</ins> <i>:string</i>, <ins>content</ins> <i>:string</i>]
 </pre>
 
-##### Fields
+#### Fields
 
 - `\title` - page title
 - `\content` - page wikitext content
 
-#### `mwUser`
+### 🔹 mwUser
 
 Represents a MediaWiki user
 
-##### Constructor
+#### Constructor
 
 <pre>
 <b>to :mwUser</b> [<ins>details</ins> <i>:dictionary</i>]
 </pre>
 
-##### Fields
+#### Fields
 
 - `\details` - user information dictionary
 
-#### `mwCategory`
+### 🔹 mwCategory
 
 Represents a wiki category with its members
 
-##### Constructor
+#### Constructor
 
 <pre>
 <b>to :mwCategory</b> [<ins>name</ins> <i>:string</i>, <ins>members</ins> <i>:integer</i>]
 </pre>
 
-##### Fields
+#### Fields
 
 - `\name` - category name
 - `\members` - number of members
@@ -133,7 +211,7 @@ Represents a wiki category with its members
 
 <hr/>
 
-### License
+## License
 
 MIT License
 
