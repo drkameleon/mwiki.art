@@ -198,21 +198,51 @@ define :MW [
     ]
     
     category: method [name :string][
-        ;; description: « get all members of given category
+        ;; description: « get all members of given category with pagination support
+        ;; options: [
+        ;;     limit: :integer « limit results (default: unlimited, fetches all)
+        ;; ]
         ;; returns: :mwCategory :null
 
-        resp: \api.get #[
-            action: "query"
-            list: "categorymembers"
-            cmtitle: (prefix? name "Category:")? -> name -> "Category:" ++ name
-            cmlimit: "500"
-            format: "json"
+        catName: (prefix? name "Category:")? -> name -> "Category:" ++ name
+        members: []
+        continue: ""
+        totalFetched: 0
+        lmt: attr 'limit
+        
+        while ø [
+            params: #[
+                action: "query"
+                list: "categorymembers"
+                cmtitle: catName
+                cmlimit: "500"
+                format: "json"
+            ]
+            
+            unless empty? continue ->
+                params\cmcontinue: continue
+
+            resp: \api.get params
+            if resp\status <> 200 -> return ø
+            
+            data: read.json resp\body
+            batch: map data\query\categorymembers 'item -> item\title
+            'members ++ batch
+            totalFetched: totalFetched + size batch
+            
+            ; Check if we hit the limit
+            if lmt [
+                if totalFetched >= lmt [
+                    members: slice members 0 lmt-1
+                    break
+                ]
+            ]
+            
+            ; Check if there's more to fetch
+            (key? data 'continue)?
+                -> continue: data\continue\cmcontinue
+                -> break
         ]
-        
-        if resp\status <> 200 -> return null
-        
-        data: read.json resp\body
-        members: map data\query\categorymembers 'item -> item\title
         
         return to :mwCategory @[name size members]!
     ]
