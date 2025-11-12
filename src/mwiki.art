@@ -228,16 +228,18 @@ define :MW [
         lmt: (attr 'limit) ?? 10
         
         searchQuery: query
-        if cat: attr 'category ->
+        if cat: <= attr 'category ->
             searchQuery: searchQuery ++ " incategory:" ++ cat
 
-        resp: \api.get #[
+        searchParams: #[
             action: "query"
             list: "search"
             srsearch: searchQuery
             srlimit: to :string lmt
             format: "json"
         ]
+        
+        resp: \api.get searchParams
         
         if resp\status <> 200 -> return @[]
         
