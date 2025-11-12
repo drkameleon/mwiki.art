@@ -33,7 +33,7 @@ define :mwCategory [
     init: constructor [name members]
     
     string: method [][
-        ~"Category: |\name| (|\members| members)"
+        ~"Category: |\name| (|size \members| members)"
     ]
 ]
 
@@ -244,7 +244,7 @@ define :MW [
                 -> break
         ]
         
-        return to :mwCategory @[name size members]!
+        return to :mwCategory @[name members]!
     ]
     
     search: method [query :string][
