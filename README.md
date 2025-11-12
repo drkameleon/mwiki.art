@@ -47,7 +47,7 @@ print.lines results
 
 ; Get category members
 cat: wiki\category "Programming Tasks"
-print [cat\name "has" cat\members "members"]
+print [cat\name "has" size cat\members "members"]
 
 ; Login and edit (requires credentials)
 using wiki [
@@ -119,7 +119,7 @@ Get all members of given category.
 </pre>
 
 ###### Returns
-- *:mwCategory* - category object containing name, size, and member list
+- *:mwCategory* - category object containing name and member list
 - *:null* - request failure
 
 ##### `search`
@@ -205,7 +205,7 @@ Represents a wiki category with its members
 #### Fields
 
 - `\name` - category name
-- `\members` - number of members
+- `\members` - list of members
 
 > [!TIP]
 > The wrapper automatically handles session cookies and CSRF tokens, so you don't need to worry about authentication state management! 😉
