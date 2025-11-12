@@ -220,16 +220,21 @@ define :MW [
     search: method [query :string][
         ;; description: « search wiki pages using given query
         ;; options: [
+        ;;     category: :string « only search in given category
         ;;     limit: :integer « limit search results (default: 10)
         ;; ]
         ;; returns: :block
 
         lmt: (attr 'limit) ?? 10
         
+        searchQuery: query
+        if cat: attr 'category ->
+            searchQuery: searchQuery ++ " incategory:" ++ cat
+
         resp: \api.get #[
             action: "query"
             list: "search"
-            srsearch: query
+            srsearch: searchQuery
             srlimit: to :string lmt
             format: "json"
         ]
