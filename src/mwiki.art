@@ -222,7 +222,6 @@ define :MW [
         ;; options: [
         ;;     limit: :integer « limit search results (default: 10)
         ;;     what: :string « search type: 'title, 'text, or 'nearmatch (default: title)
-        ;;     namespace: :string :block « search in specific namespace(s)
         ;; ]
         ;; returns: :block
 
@@ -238,10 +237,6 @@ define :MW [
         
         if what: <= attr 'what ->
             searchParams\srwhat: what
-        
-        if ns: <= attr 'namespace [
-            searchParams\srnamespace: (string? ns)? -> ns -> join.with:"|" ns
-        ]
         
         resp: \api.get searchParams
         
