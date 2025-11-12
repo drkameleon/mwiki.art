@@ -220,21 +220,18 @@ define :MW [
     search: method [query :string][
         ;; description: « search wiki pages using given query
         ;; options: [
-        ;;     category: :string « only search in given category
         ;;     limit: :integer « limit search results (default: 10)
-        ;;     what: :string :literal « 'title, 'text, or 'nearmatch (default: title)
+        ;;     what: :string « search type: 'title, 'text, or 'nearmatch (default: title)
+        ;;     namespace: :string :block « search in specific namespace(s)
         ;; ]
         ;; returns: :block
 
         lmt: (attr 'limit) ?? 10
-        
-        searchQuery: query
-
 
         searchParams: #[
             action: "query"
             list: "search"
-            srsearch: searchQuery
+            srsearch: query
             srlimit: to :string lmt
             format: "json"
         ]
@@ -242,6 +239,11 @@ define :MW [
         ; Add search type if specified (title, text, nearmatch)
         if what: <= attr 'what ->
             searchParams\srwhat: what
+        
+        ; Add namespace filter if specified
+        if ns: <= attr 'namespace [
+            searchParams\srnamespace: (string? ns)? -> ns -> join.with:"|" ns
+        ]
         
         resp: \api.get searchParams
         
