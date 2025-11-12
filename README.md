@@ -134,7 +134,7 @@ Search wiki pages using given query.
 
 | Option | Type | Description |
 |----|----|----|
-| category | :string | Only search in given category |
+| what | :string :literal | `'title`, `'text`, or `'nearmatch` (default: `'title`) |
 | limit | :integer | Limit search results (default: 10) |
 
 ###### Returns
