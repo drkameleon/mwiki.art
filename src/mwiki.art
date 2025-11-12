@@ -215,7 +215,7 @@ define :MW [
                 action: "query"
                 list: "categorymembers"
                 cmtitle: catName
-                cmlimit: "500"
+                cmlimit: clamp (lmt ?? 500) 0..500
                 format: "json"
             ]
             
