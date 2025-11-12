@@ -222,14 +222,14 @@ define :MW [
         ;; options: [
         ;;     category: :string « only search in given category
         ;;     limit: :integer « limit search results (default: 10)
+        ;;     what: :string :literal « 'title, 'text, or 'nearmatch (default: title)
         ;; ]
         ;; returns: :block
 
         lmt: (attr 'limit) ?? 10
         
         searchQuery: query
-        if cat: <= attr 'category ->
-            searchQuery: searchQuery ++ " incategory:" ++ cat
+
 
         searchParams: #[
             action: "query"
@@ -238,6 +238,10 @@ define :MW [
             srlimit: to :string lmt
             format: "json"
         ]
+        
+        ; Add search type if specified (title, text, nearmatch)
+        if what: <= attr 'what ->
+            searchParams\srwhat: what
         
         resp: \api.get searchParams
         
