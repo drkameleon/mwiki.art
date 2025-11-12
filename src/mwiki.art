@@ -236,11 +236,9 @@ define :MW [
             format: "json"
         ]
         
-        ; Add search type if specified (title, text, nearmatch)
         if what: <= attr 'what ->
             searchParams\srwhat: what
         
-        ; Add namespace filter if specified
         if ns: <= attr 'namespace [
             searchParams\srnamespace: (string? ns)? -> ns -> join.with:"|" ns
         ]
